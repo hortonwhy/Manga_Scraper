@@ -48,10 +48,9 @@ def main():
         time.sleep(5)
 
         for div in page_soup.find_all('div', {'class': 'container-chapter-reader'}):
-            time.sleep(0.5)
+            time.sleep(2)
             img_list = (div.find_all('img'))
             for img in img_list:
-                time.sleep(0.25)
                 src_list.append(img.get('src'))
                 #print(img.get('src'))
             manga = Manga(src_list, head_title, title)
@@ -59,6 +58,8 @@ def main():
 
 
 def img_get_file(manga):
+    print(manga.title)
+    time.sleep(2)
     counter = 0
     cwd_name = os.getcwd()
     manga_title = manga.title
@@ -76,5 +77,3 @@ def img_get_file(manga):
                     f.write(img_dl.content)
                     counter += 1
                     print('counter:', counter)
-
-main()
