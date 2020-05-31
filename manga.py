@@ -2,18 +2,11 @@ from bs4 import BeautifulSoup
 import requests
 import os
 import time
-import urllib.request
-#from img_download import img_get
-
-# I want to make a manga scraper that, given a url
-# will download each chapter and compress and return an archive
-# that has each chapter in hierarchal order, etc...
-# i also want to implement this into a web app, so you go to this website
-# and put the url in and within time, you receive a download for a zIp
+from urllib.request import Request, urlopen
 
 
-#this is how you get the page info from a url
-#domain = print(input('Enter the domain of the website, ex: manganelo.com: '))
+#want to add an automatic zip function, maybe who knows.
+
 global manga
 
 class Manga:
@@ -26,13 +19,14 @@ class Manga:
 def main():
     url = 'https://manganelo.com/manga/garden_sphere'
     domain = 'manganelo.com'
-    result = requests.get(url)
-    print(result.status_code)
     link_list = []
 
-    src = result.content    #stores page content to variable
+    site = 'https://manganelo.com/manga/garden_sphere'
+    hdr = {'User-Agent': 'Mozilla/5.0'}
+    req = Request(site, headers=hdr)
+    page = urlopen(req)
+    soup = BeautifulSoup(page)
 
-    soup = BeautifulSoup(src, 'lxml') #parses and processes the source
     head_title = soup.title.get_text()
     print(head_title)
 
@@ -52,7 +46,6 @@ def main():
             img_list = (div.find_all('img'))
             for img in img_list:
                 src_list.append(img.get('src'))
-                #print(img.get('src'))
             manga = Manga(src_list, head_title, title)
             img_get_file(manga)
 
@@ -73,7 +66,13 @@ def img_get_file(manga):
         time.sleep(5)
         img_dl = requests.get(link)
         if img_dl.status_code == 200:
+            #ISSUE, some pages give 403 errors even when images are available
+            #May be site side
                 with open(filename+'/'+'{}.png'.format(counter), 'wb') as f:
                     f.write(img_dl.content)
                     counter += 1
                     print('counter:', counter)
+        else:
+            print('response was',img_dl.status_code)
+
+main()
