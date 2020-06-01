@@ -5,8 +5,7 @@ import time
 import urllib.request
 from urllib.request import Request, urlopen
 import random
-
-
+import re
 #want to add an automatic zip function, maybe who knows.
 
 global manga
@@ -72,8 +71,9 @@ def img_get_file(manga):
 # if s3 is in the link it needs to be switched!!!
 # in the link s3.mkklcdnv3.com needs to be switched to s8.mkkldcdnv8.com
     for link in manga.urls:
-        if 's3.mkklcdnv3' in link:
-            link = link.replace('s3.mkklcdnv3', 's8.mkklcdnv8')
+        if re.findall('s..mkklcdnv.', link)[0] in link:
+            #link = link.replace('s3.mkklcdnv3', 's8.mkklcdnv8')
+            link = link.replace(re.findall('s..mkklcdnv.', link)[0], 's8.mkklcdnv8')
         img_dl = requests.get(link)
         time.sleep(random.randint(1,3))
         if img_dl.status_code == 200:
